@@ -16,11 +16,11 @@ func Router() *mux.Router{
 
 	todoService := middleware.NewTodoService()
 
-	router.HandleFunc("/api/todos", todoService.CreateTodoHandler).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/{username}/todos", todoService.GetAllTodosHandler).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/todo/{id}", todoService.GetTodoHandler).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/todo/{id}", todoService.UpdateTodoHandler).Methods("PUT", "OPTIONS")
-	router.HandleFunc("/api/todo/{id}", todoService.DeleteTodoHandler).Methods("DELETE", "OPTIONS")
+	router.HandleFunc("/api/{user_id}/todos", todoService.CreateTodoHandler).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/{user_id}/todos", todoService.GetAllTodosHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/{user_id}/todo/{id}", todoService.GetTodoHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/{user_id}/todo/{id}", todoService.UpdateTodoHandler).Methods("PUT", "OPTIONS")
+	router.HandleFunc("/api/{user_id}/todo/{id}", todoService.DeleteTodoHandler).Methods("DELETE", "OPTIONS")
 
 	return router
 }

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	// "github.com/google/uuid"
 	"github.com/dhairya-07/todo/database"
 )
 
@@ -60,13 +61,15 @@ func NewTodoService() TodoService {
 
 func (s *todoService) CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	var todo database.Todo
+	vars := mux.Vars(r)
+	user_id := vars["user_id"]
 	err := json.NewDecoder(r.Body).Decode(&todo)
 	if err!=nil{
 		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
 		return
 	}
 
-	newTodo, err := database.CreateTodo(todo.Username, todo.Title, todo.Description, "Pending", time.Now(), time.Now())
+	newTodo, err := database.CreateTodo(user_id,todo.Title, todo.Description, "Pending", time.Now(), time.Now())
 	if err!=nil{
 		http.Error(w,fmt.Sprintf("Error in creating todo: %v",err), http.StatusBadRequest)
 		return
@@ -77,11 +80,11 @@ func (s *todoService) CreateTodoHandler(w http.ResponseWriter, r *http.Request) 
 
 func (s *todoService) GetAllTodosHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	username := vars["username"]
+	user_id := vars["user_id"]
 
-	todos, err := database.GetAllTodos(username)
+	todos, err := database.GetAllTodos(user_id)
 	if err!=nil{
-		http.Error(w, "Internal server error",http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Internal server error %v",err),http.StatusInternalServerError)
 		return
 	}
 	json.NewEncoder(w).Encode(todos)
@@ -90,13 +93,14 @@ func (s *todoService) GetAllTodosHandler(w http.ResponseWriter, r *http.Request)
 func (s *todoService) GetTodoHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
+	user_id := vars["user_id"]
 
-	todo, err := database.GetTodo(id)
+	todo, err := database.GetTodo(user_id,id)
 	if err!=nil{
 		if err == database.ErrNotFound{
 			http.Error(w, "No todo found", http.StatusNotFound)
 		}else{
-			http.Error(w, "Error retrieving todo", http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Error retrieving todo: %v",err), http.StatusInternalServerError)
 		}
 		return
 	}
@@ -105,17 +109,21 @@ func (s *todoService) GetTodoHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *todoService) UpdateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	user_id := vars["user_id"]
 	id := vars["id"]
 
-	var updatedStatus string
+	var updatedStatus struct {
+        Status string `json:"Status"`
+    }
+
 	err := json.NewDecoder(r.Body).Decode(&updatedStatus)
 	if err!=nil{
 		http.Error(w, "Invalid JSON format",http.StatusBadRequest)
 	}
 
-	msg, err := database.UpdateTodo(id, updatedStatus)
+	msg, err := database.UpdateTodo(user_id,id, updatedStatus.Status)
 	if err!=nil{
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Error: %v",err), http.StatusInternalServerError)
 		return
 	}
 	w.Write([]byte(msg))
@@ -125,8 +133,9 @@ func (s *todoService) UpdateTodoHandler(w http.ResponseWriter, r *http.Request) 
 func (s *todoService) DeleteTodoHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
+	user_id := vars["user_id"]
 
-	msg, err := database.DeleteTodo(id)
+	msg, err := database.DeleteTodo(user_id,id)
 	if err!=nil{
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
