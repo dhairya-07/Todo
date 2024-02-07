@@ -14,9 +14,9 @@ For now only the create todo handler is working fine rest have db related and sy
 
 Endpoints:
  - Create todo - ```http://localhost:9000/api/{userID}/todos``` POST REQUEST
-   - Request body: JSON {"Title":"", "Description":""}
- - Get All todos - ```http://localhost:9000/api/{userID}/todos``` GET REQUEST
- - Get todo - ```http://localhost:9000/api/{userID}/todo/{todoID}``` GET REQUEST
- - Update todo status - ```http://localhost:9000/api/{userID}/todo/{todoID}``` PUT REQUEST
+   - Request body: JSON {"Title":"", "Description":""}<br>
+ - Get All todos - ```http://localhost:9000/api/{userID}/todos``` GET REQUEST <br>
+ - Get todo - ```http://localhost:9000/api/{userID}/todo/{todoID}``` GET REQUEST <br>
+ - Update todo status - ```http://localhost:9000/api/{userID}/todo/{todoID}``` PUT REQUEST <br>
    - Request body: JSON {"Status":""}
- - Delete todo - ```http://localhost:9000/api/{userID}/todo/{todoID}``` DELETE REQUEST
+ - Delete todo - ```http://localhost:9000/api/{userID}/todo/{todoID}``` DELETE REQUEST 
